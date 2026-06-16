@@ -89,8 +89,6 @@ class BenchmarkRunner:
                     timeout=self.config.timeout
                 )
 
-                latency = time.perf_counter() - start_time
-
                 # 2. Chạy Retrieval Evaluation
                 retrieval_scores = await self.evaluator.evaluate_retrieval(
                     [test_case],
@@ -116,6 +114,7 @@ class BenchmarkRunner:
                 # Determine status
                 final_score = judge_result.final_score
                 status = "pass" if final_score >= 3.0 else "fail"
+                latency = time.perf_counter() - start_time
 
                 return BenchmarkResult(
                     test_case_id=test_id,

@@ -240,13 +240,16 @@ async def main():
     summary_report = {
         "metadata": {
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "total": len(dataset),
             "total_cases": len(dataset),
+            "version": "Agent_V2_Optimized",
             "v1_version": "Agent_V1_Base",
             "v2_version": "Agent_V2_Optimized"
         },
         "metrics": {
             "hit_rate": v2_summary.get("metrics", {}).get("hit_rate", 0),
             "mrr": v2_summary.get("metrics", {}).get("mrr", 0),
+            "avg_score": v2_summary.get("metrics", {}).get("avg_judge_score", 0),
             "avg_judge_score": v2_summary.get("metrics", {}).get("avg_judge_score", 0),
             "agreement_rate": v2_summary.get("metrics", {}).get("agreement_rate", 0),
             "avg_latency": v2_summary.get("avg_latency_seconds", 0),

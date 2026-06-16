@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "timestamp": "2026-06-16 14:13:54",
+    "total": 50,
+    "total_cases": 50,
+    "version": "Agent_V2_Optimized",
+    "v1_version": "Agent_V1_Base",
+    "v2_version": "Agent_V2_Optimized"
+  },
+  "metrics": {
+    "hit_rate": 0.74,
+    "mrr": 0.62,
+    "avg_score": 3.1,
+    "avg_judge_score": 3.1,
+    "agreement_rate": 0.64,
+    "avg_latency": 4.634,
+    "total_time": 52.2
+  },
+  "regression": {
+    "decision": "BLOCK",
+    "reason": "Below minimum thresholds",
+    "thresholds": {
+      "min_hit_rate": 0.7,
+      "min_mrr": 0.6,
+      "min_judge_score": 3.0,
+      "min_agreement": 0.7,
+      "max_regression": 0.05,
+      "min_improvement": 0.02
+    },
+    "v1_metrics": {
+      "hit_rate": 0.72,
+      "mrr": 0.627,
+      "avg_judge_score": 3.15,
+      "agreement_rate": 0.62
+    },
+    "v2_metrics": {
+      "hit_rate": 0.74,
+      "mrr": 0.62,
+      "avg_judge_score": 3.1,
+      "agreement_rate": 0.64
+    },
+    "deltas": {
+      "hit_rate": 0.02,
+      "mrr": -0.007,
+      "judge_score": -0.05,
+      "agreement": 0.02
+    },
+    "checks": {
+      "passes_hit_rate": true,
+      "passes_mrr": true,
+      "passes_judge": true,
+      "passes_agreement": false,
+      "has_regression": false,
+      "has_improvement": true
+    }
+  },
+  "cost": {
+    "total_tokens": 7500,
+    "estimated_cost_usd": 0.15
+  }
+}

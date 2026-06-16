@@ -27,7 +27,7 @@
 - ✅ Implement `BenchmarkRunner` với batch processing
 - ✅ Implement semaphore để tránh rate limit
 - ✅ Implement cost tracking (token usage + estimated cost)
-- ✅ Optimize: 50s cho 50 cases (V1), 50s cho V2 = ~1s/case
+- ✅ Optimize: V1 chạy 50 cases trong 53.12s, V2 chạy 50 cases trong 52.20s, đạt yêu cầu < 2 phút cho 50 cases
 
 #### d) Regression Gate (`main.py`)
 - ✅ Implement `RegressionGate` với các thresholds:
@@ -47,7 +47,7 @@
 - **Định nghĩa:** Trung bình cộng của 1/rank đầu tiên tìm thấy relevant document
 - **Công thức:** MRR = (1/N) * Σ(1/rank_i)
 - **Ý nghĩa:** Đo lường "nhanh chóng" tìm thấy thông tin đúng
-- **Trong benchmark:** MRR V1 = 64%, V2 = 65.3%
+- **Trong benchmark:** MRR V1 = 62.7%, V2 = 62.0%
 
 #### b) Cohen's Kappa
 - **Định nghĩa:** Đo lường sự đồng thuận giữa 2 judges, loại bỏ random agreement
@@ -73,7 +73,7 @@
 | RAGAS only | $ | ★★★ | Fast, no LLM call |
 | Full Multi-Judge + RAGAS | $$$$ | ★★★★★ | Most comprehensive |
 
-**Kết quả thực tế:** Agreement rate 62-66% cho thấy Multi-Judge thực sự hoạt động!
+**Kết quả thực tế:** Agreement rate V1 = 62%, V2 = 64%. Hai judge có khác biệt đánh giá, nên cần calibration thêm để đạt ngưỡng 70%.
 
 ---
 
@@ -99,16 +99,22 @@
 
 ---
 
-## 4. Git Contributions
+## 4. Đóng góp chính
 
+- Implement RetrievalEvaluator với Hit Rate và MRR.
+- Implement Multi-Judge với OpenRouter, GPT-4o-mini và Claude-3-haiku.
+- Implement Async Benchmark Runner với batch processing, semaphore và cost tracking.
+- Implement Regression Release Gate trong `main.py`.
+- Cập nhật `failure_analysis.md` theo kết quả benchmark mới nhất và phân tích 5 Whys.
+- Fix schema `summary.json` để tương thích với `check_lab.py`.
+
+### Git Evidence
+
+```text
+9b99c4b - feat: Complete Lab 14 AI Evaluation Factory with Multi-Judge, Retrieval Eval, and Regression Testing
 ```
-commit abc123 - feat: Implement RetrievalEvaluator with Hit Rate & MRR
-commit def456 - feat: Implement Multi-Judge with OpenRouter (GPT + Claude)
-commit ghi789 - feat: Add Async Benchmark Runner with cost tracking
-commit jkl012 - feat: Add Regression Release Gate logic
-commit mno345 - docs: Update failure analysis with 5 Whys
-commit pqr678 - fix: Add OpenRouter required headers (HTTP-Referer, X-Title)
-```
+
+Commit này bao gồm các phần chính của bài lab: Retrieval Evaluation, Multi-Judge Consensus, Async Benchmark Runner, Regression Testing và generated reports.
 
 ---
 
@@ -116,14 +122,14 @@ commit pqr678 - fix: Add OpenRouter required headers (HTTP-Referer, X-Title)
 
 | Metric | V1 (Baseline) | V2 (Optimized) | Delta |
 |--------|---------------|----------------|-------|
-| Hit Rate | 76% | 76% | +0% |
-| MRR | 64% | 65.3% | +1.3% |
-| Judge Score | 3.18 | 3.14 | -0.04 |
-| Agreement | 66% | 62% | -4% |
+| Hit Rate | 72% | 74% | +2% |
+| MRR | 62.7% | 62.0% | -0.7% |
+| Judge Score | 3.15 | 3.10 | -0.05 |
+| Agreement | 62% | 64% | +2% |
 | Pass Rate | 66% | 66% | +0% |
-| Time | 50.43s | 49.56s | -0.87s |
+| Time | 53.12s | 52.20s | -0.92s |
 
-**Final Decision:** BLOCK - Agreement rate thấp hơn ngưỡng 70%
+**Final Decision:** BLOCK - Agreement rate 64% thấp hơn ngưỡng 70%
 
 ---
 

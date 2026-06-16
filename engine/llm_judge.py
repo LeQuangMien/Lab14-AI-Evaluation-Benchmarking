@@ -51,6 +51,8 @@ class MultiModelJudge:
         self.models = models or ["openai/gpt-4o-mini", "anthropic/claude-3-haiku"]
         self.conflict_threshold = conflict_threshold
         self.api_keys = self._load_api_keys()
+        self.disabled_providers = set()
+        self.warned_providers = set()
         self.cost_per_1k_tokens = {
             "gpt-4o": {"input": 0.005, "output": 0.015},
             "claude-3-5-sonnet": {"input": 0.003, "output": 0.015}
@@ -66,6 +68,18 @@ class MultiModelJudge:
         if os.getenv("ANTHROPIC_API_KEY"):
             keys["anthropic"] = os.getenv("ANTHROPIC_API_KEY")
         return keys
+
+    def _warn_provider_once(self, provider: str, error: Exception):
+        """Log provider failures once to keep benchmark output readable."""
+        if provider in self.warned_providers:
+            return
+
+        self.warned_providers.add(provider)
+        message = str(error).strip() or repr(error)
+        print(
+            f"Warning: {provider} unavailable "
+            f"({error.__class__.__name__}: {message}). Using fallback judge responses."
+        )
 
     async def call_openai(self, model: str, prompt: str) -> Dict[str, Any]:
         """Gọi OpenAI API"""
@@ -93,7 +107,8 @@ class MultiModelJudge:
                 }
             }
         except Exception as e:
-            print(f"Error calling OpenAI: {e}")
+            self.disabled_providers.add("openai")
+            self._warn_provider_once("OpenAI", e)
             return self._fallback_judge_response(model)
 
     async def call_anthropic(self, model: str, prompt: str) -> Dict[str, Any]:
@@ -120,34 +135,37 @@ class MultiModelJudge:
                 }
             }
         except Exception as e:
-            print(f"Error calling Anthropic: {e}")
+            self.disabled_providers.add("anthropic")
+            self._warn_provider_once("Anthropic", e)
             return self._fallback_judge_response(model)
 
     async def call_openrouter(self, model: str, prompt: str) -> Dict[str, Any]:
         """Gọi OpenRouter API (supports multiple models)"""
+        if "openrouter" in self.disabled_providers:
+            return self._fallback_judge_response(model)
+
         try:
             import httpx
-            client = httpx.AsyncClient()
 
-            response = await client.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self.api_keys.get('openrouter')}",
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "http://localhost",
-                    "X-Title": "AI-Eval-Benchmark"
-                },
-                json={
-                    "model": model,
-                    "messages": [
-                        {"role": "system", "content": self._get_judge_system_prompt()},
-                        {"role": "user", "content": prompt}
-                    ],
-                    "temperature": 0.3,
-                    "max_tokens": 500
-                },
-                timeout=30.0
-            )
+            async with httpx.AsyncClient(timeout=httpx.Timeout(12.0, connect=5.0)) as client:
+                response = await client.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {self.api_keys.get('openrouter')}",
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "http://localhost",
+                        "X-Title": "AI-Eval-Benchmark"
+                    },
+                    json={
+                        "model": model,
+                        "messages": [
+                            {"role": "system", "content": self._get_judge_system_prompt()},
+                            {"role": "user", "content": prompt}
+                        ],
+                        "temperature": 0.3,
+                        "max_tokens": 500
+                    }
+                )
             response.raise_for_status()
             data = response.json()
 
@@ -162,7 +180,8 @@ class MultiModelJudge:
                 }
             }
         except Exception as e:
-            print(f"Error calling OpenRouter: {e}")
+            self.disabled_providers.add("openrouter")
+            self._warn_provider_once("OpenRouter", e)
             return self._fallback_judge_response(model)
 
     def _get_judge_system_prompt(self) -> str:
