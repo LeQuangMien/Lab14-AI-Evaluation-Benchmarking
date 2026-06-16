@@ -1,5 +1,12 @@
 # Báo cáo Phân tích Thất bại (Failure Analysis Report)
 
+# Tên Thành Viên
+1. 2A202600715 - Lê Quang Miền
+2. 2A202600600 - Kim Hồng Giang
+3. 2A202600803 - Trần Đức Tâm
+4. 2A202600799 - Trần Ngọc Thụy
+5. 2A202600561 - Lê Quốc Bảo
+
 ## 1. Tổng quan Benchmark
 - **Tổng số cases:** 50
 - **Tỉ lệ Pass/Fail:** 33/17
