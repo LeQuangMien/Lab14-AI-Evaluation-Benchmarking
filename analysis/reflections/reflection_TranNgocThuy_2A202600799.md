@@ -1,7 +1,7 @@
-# Individual Reflection - Trần Ngọc Thúy - 2A202600799
+# Individual Reflection - Trần Ngọc Thụy - 2A202600799
 
 ## Student Information
-- **Name:** Trần Ngọc Thúy
+- **Name:** Trần Ngọc Thụy
 - **Student ID:** 2A202600799
 - **Role:** Evaluation Engineer - Retrieval Metrics, Multi-Judge Consensus và Failure Analysis
 
