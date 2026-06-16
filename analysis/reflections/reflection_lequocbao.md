@@ -1,8 +1,8 @@
 # Individual Reflection - Lab 14 AI Evaluation Factory
 
 ## 👤 Thông tin cá nhân
-- **Họ tên:** Kim Hong Giang
-- **Vai trò:** Full-stack Implementation (Retrieval + Judge + Runner + Multi-Judge)
+- **Họ tên:** Lê Quốc Bảo
+- **Vai trò:** Retrieval + Judge 
 
 ---
 
