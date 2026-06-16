@@ -1,0 +1,122 @@
+[
+  {
+    "id": "DOC-EVAL-001",
+    "title": "Evaluation Factory Overview",
+    "text": "AI Evaluation Factory is a repeatable benchmark pipeline that measures retrieval quality, generation quality, judge reliability, regression risk, latency, token usage, and cost before an agent release.",
+    "keywords": [
+      "evaluation",
+      "benchmark",
+      "pipeline",
+      "release",
+      "factory"
+    ]
+  },
+  {
+    "id": "DOC-RET-001",
+    "title": "Retrieval Metrics",
+    "text": "Hit Rate checks whether at least one expected document appears in the retrieved top-k results. MRR, or Mean Reciprocal Rank, rewards systems that rank the first relevant document near the top.",
+    "keywords": [
+      "hit rate",
+      "mrr",
+      "retrieval",
+      "top-k",
+      "rank"
+    ]
+  },
+  {
+    "id": "DOC-DATA-001",
+    "title": "Golden Dataset Rules",
+    "text": "A golden dataset for this lab must contain at least fifty cases. Each case needs a question, expected answer, context, difficulty, case type, and expected retrieval document ids.",
+    "keywords": [
+      "golden dataset",
+      "fifty",
+      "expected answer",
+      "ground truth",
+      "ids"
+    ]
+  },
+  {
+    "id": "DOC-JUDGE-001",
+    "title": "Multi Judge Consensus",
+    "text": "A reliable evaluation uses at least two judge models. The system records individual scores, computes agreement rate, and resolves conflicts when judge scores differ by more than one point.",
+    "keywords": [
+      "judge",
+      "consensus",
+      "agreement",
+      "conflict",
+      "models"
+    ]
+  },
+  {
+    "id": "DOC-REG-001",
+    "title": "Regression Release Gate",
+    "text": "Regression testing compares Agent V2 with Agent V1. A release should be approved only when quality does not regress, retrieval metrics stay above threshold, and cost or latency remains acceptable.",
+    "keywords": [
+      "regression",
+      "v1",
+      "v2",
+      "release gate",
+      "rollback"
+    ]
+  },
+  {
+    "id": "DOC-COST-001",
+    "title": "Cost and Token Tracking",
+    "text": "Every benchmark result should include token usage and estimated cost. Teams can reduce evaluation cost by caching judge calls, sampling stable cases, and routing easy cases to cheaper judges.",
+    "keywords": [
+      "cost",
+      "token",
+      "cache",
+      "sampling",
+      "cheap judge"
+    ]
+  },
+  {
+    "id": "DOC-ASYNC-001",
+    "title": "Async Benchmark Runner",
+    "text": "The benchmark runner should execute cases concurrently with a bounded batch size. Async execution keeps a fifty case run under two minutes while avoiding rate limit spikes.",
+    "keywords": [
+      "async",
+      "concurrent",
+      "batch",
+      "latency",
+      "rate limit"
+    ]
+  },
+  {
+    "id": "DOC-FAIL-001",
+    "title": "Failure Clustering",
+    "text": "Failure analysis groups bad cases into clusters such as retrieval miss, hallucination, incomplete answer, safety refusal failure, and tone mismatch before applying 5 Whys.",
+    "keywords": [
+      "failure",
+      "cluster",
+      "hallucination",
+      "5 whys",
+      "root cause"
+    ]
+  },
+  {
+    "id": "DOC-SAFE-001",
+    "title": "Adversarial and Safety Cases",
+    "text": "Red teaming cases include prompt injection, out-of-context questions, ambiguous requests, and goal hijacking. The agent should stay grounded in documents and refuse unsupported claims.",
+    "keywords": [
+      "red team",
+      "prompt injection",
+      "out of context",
+      "ambiguous",
+      "refuse"
+    ]
+  },
+  {
+    "id": "DOC-CHUNK-001",
+    "title": "Chunking Strategy",
+    "text": "Poor chunking can hide table values, separate definitions from examples, or dilute important facts. Semantic chunking and reranking can improve retrieval precision.",
+    "keywords": [
+      "chunking",
+      "semantic",
+      "reranking",
+      "table",
+      "precision"
+    ]
+  }
+]

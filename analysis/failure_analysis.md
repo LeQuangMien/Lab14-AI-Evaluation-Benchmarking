@@ -1,31 +1,49 @@
-# Báo cáo Phân tích Thất bại (Failure Analysis Report)
+# Failure Analysis Report
 
-## 1. Tổng quan Benchmark
-- **Tổng số cases:** 50
-- **Tỉ lệ Pass/Fail:** X/Y
-- **Điểm RAGAS trung bình:**
-    - Faithfulness: 0.XX
-    - Relevancy: 0.XX
-- **Điểm LLM-Judge trung bình:** X.X / 5.0
+## 1. Benchmark Overview
+- Total cases: 55
+- Pass rate: 96.4%
+- Average judge score: 4.73 / 5.0
+- Hit Rate: 98.2%
+- MRR: 0.894
+- Agreement Rate: 100.0%
+- Estimated eval cost: $0.000943
 
-## 2. Phân nhóm lỗi (Failure Clustering)
-| Nhóm lỗi | Số lượng | Nguyên nhân dự kiến |
-|----------|----------|---------------------|
-| Hallucination | 5 | Retriever lấy sai context |
-| Incomplete | 3 | Prompt quá ngắn, không yêu cầu chi tiết |
-| Tone Mismatch | 2 | Agent trả lời quá suồng sã |
+## 2. Failure Clustering
+| Cluster | Count | Interpretation |
+|---|---:|---|
+| pass | 51 | Case passed quality and retrieval checks. |
+| red_team_watch | 2 | Hard safety case passed but should stay in the monitored suite. |
+| answer_quality | 1 | Answer quality fell below judge threshold. |
+| retrieval_miss | 1 | Retriever did not return the expected source document. |
 
-## 3. Phân tích 5 Whys (Chọn 3 case tệ nhất)
+## 3. 5 Whys on Worst Cases
+### Case 1: CASE-049 - answer_quality
+1. Symptom: score=1.75, hit_rate=1.0, question='If a case fails around table, what root cause should the team inspect?'
+2. Why 1: The answer quality is limited by the evidence returned to the generator.
+3. Why 2: Retrieval ranking depends on lexical overlap and can miss paraphrases or conflicting wording.
+4. Why 3: The local corpus is small and does not use embeddings or reranking.
+5. Why 4: The lab implementation prioritizes reproducible offline evaluation over production retrieval infrastructure.
+6. Root cause: Retrieval strategy and chunk/rerank design are the highest leverage improvement areas.
 
-### Case #1: [Mô tả ngắn]
-1. **Symptom:** Agent trả lời sai về...
-2. **Why 1:** LLM không thấy thông tin trong context.
-3. **Why 2:** Vector DB không tìm thấy tài liệu liên quan nhất.
-4. **Why 3:** Chunking size quá lớn làm loãng thông tin quan trọng.
-5. **Why 4:** ...
-6. **Root Cause:** Chiến lược Chunking không phù hợp với dữ liệu bảng biểu.
+### Case 2: CASE-054 - retrieval_miss
+1. Symptom: score=3.0, hit_rate=0.0, question='Why can a good answer still receive a low benchmark score?'
+2. Why 1: The answer quality is limited by the evidence returned to the generator.
+3. Why 2: Retrieval ranking depends on lexical overlap and can miss paraphrases or conflicting wording.
+4. Why 3: The local corpus is small and does not use embeddings or reranking.
+5. Why 4: The lab implementation prioritizes reproducible offline evaluation over production retrieval infrastructure.
+6. Root cause: Retrieval strategy and chunk/rerank design are the highest leverage improvement areas.
 
-## 4. Kế hoạch cải tiến (Action Plan)
-- [ ] Thay đổi Chunking strategy từ Fixed-size sang Semantic Chunking.
-- [ ] Cập nhật System Prompt để nhấn mạnh vào việc "Chỉ trả lời dựa trên context".
-- [ ] Thêm bước Reranking vào Pipeline.
+### Case 3: CASE-004 - pass
+1. Symptom: score=3.0, hit_rate=1.0, question='If a case fails around release, what root cause should the team inspect?'
+2. Why 1: The answer quality is limited by the evidence returned to the generator.
+3. Why 2: Retrieval ranking depends on lexical overlap and can miss paraphrases or conflicting wording.
+4. Why 3: The local corpus is small and does not use embeddings or reranking.
+5. Why 4: The lab implementation prioritizes reproducible offline evaluation over production retrieval infrastructure.
+6. Root cause: Retrieval strategy and chunk/rerank design are the highest leverage improvement areas.
+
+## 4. Improvement Plan
+- Add embedding retrieval plus reranking for paraphrased questions.
+- Keep the red-team set in every regression run.
+- Cache judge results for unchanged cases to reduce cost by at least 30%.
+- Route easy stable cases to a cheaper judge and reserve strict consensus for hard cases.

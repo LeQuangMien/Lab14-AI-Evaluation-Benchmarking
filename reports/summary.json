@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "version": "Agent_V2_Optimized",
+    "total": 55,
+    "timestamp": "2026-06-16 15:59:12",
+    "elapsed_seconds": 0.183
+  },
+  "metrics": {
+    "avg_score": 4.727,
+    "hit_rate": 0.982,
+    "mrr": 0.894,
+    "faithfulness": 0.988,
+    "relevancy": 0.638,
+    "agreement_rate": 1.0,
+    "pass_rate": 0.964,
+    "avg_latency_seconds": 0.0287,
+    "p95_latency_seconds": 0.0315,
+    "total_tokens": 6284,
+    "estimated_cost_usd": 0.000943
+  },
+  "regression": {
+    "baseline_version": "Agent_V1_Base",
+    "score_delta": 0.0,
+    "hit_rate_delta": 0.0,
+    "cost_delta_usd": -0.000311
+  },
+  "release_gate": {
+    "decision": "APPROVE",
+    "reasons": [
+      "All quality, retrieval, agreement, cost, and latency checks passed."
+    ],
+    "thresholds": {
+      "min_avg_score": 3.5,
+      "min_hit_rate": 0.85,
+      "min_agreement_rate": 0.75,
+      "max_avg_latency_seconds": 2.0
+    }
+  },
+  "failure_clusters": {
+    "pass": 51,
+    "answer_quality": 1,
+    "red_team_watch": 2,
+    "retrieval_miss": 1
+  }
+}
