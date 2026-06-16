@@ -2,30 +2,50 @@
 
 ## 1. Tổng quan Benchmark
 - **Tổng số cases:** 50
-- **Tỉ lệ Pass/Fail:** X/Y
-- **Điểm RAGAS trung bình:**
-    - Faithfulness: 0.XX
-    - Relevancy: 0.XX
-- **Điểm LLM-Judge trung bình:** X.X / 5.0
+- **Tỉ lệ Pass/Fail:** 48/2
+- **Faithfulness proxy trung bình:** 0.1552
+- **Relevancy proxy trung bình:** 0.4144
+- **Hit Rate trung bình:** 0.94
+- **MRR trung bình:** 0.91
+- **Điểm Multi-Judge trung bình:** 4.78 / 5.0
+- **Agreement Rate:** 0.98
+- **Cohen's Kappa:** 0.7899
 
 ## 2. Phân nhóm lỗi (Failure Clustering)
 | Nhóm lỗi | Số lượng | Nguyên nhân dự kiến |
 |----------|----------|---------------------|
-| Hallucination | 5 | Retriever lấy sai context |
-| Incomplete | 3 | Prompt quá ngắn, không yêu cầu chi tiết |
-| Tone Mismatch | 2 | Agent trả lời quá suồng sã |
+| incomplete | 2 | Incomplete detected by multi-judge consensus |
+| retrieval_miss | 2 | Retrieval Miss detected by multi-judge consensus |
+| tone_mismatch | 1 | Tone Mismatch detected by multi-judge consensus |
 
-## 3. Phân tích 5 Whys (Chọn 3 case tệ nhất)
+## 3. Phân tích 5 Whys (3 case tệ nhất)
+### Case #1: hard_43_position_bias
+1. **Symptom:** Judge score 1.0 for question: Vì sao cần đổi vị trí response A/B khi đánh giá?
+2. **Why 1:** Agent response did not fully match the expected answer.
+3. **Why 2:** Retrieval hit rate was 0.0 and MRR was 0.0.
+4. **Why 3:** Judge tags were incomplete, retrieval_miss.
+5. **Why 4:** The case type was position-bias, which stresses a known weak point.
+6. **Root Cause:** Retrieval/chunking mismatch: expected document was not retrieved in top-k.
 
-### Case #1: [Mô tả ngắn]
-1. **Symptom:** Agent trả lời sai về...
-2. **Why 1:** LLM không thấy thông tin trong context.
-3. **Why 2:** Vector DB không tìm thấy tài liệu liên quan nhất.
-4. **Why 3:** Chunking size quá lớn làm loãng thông tin quan trọng.
-5. **Why 4:** ...
-6. **Root Cause:** Chiến lược Chunking không phù hợp với dữ liệu bảng biểu.
+### Case #2: hard_50_multi_turn_carry_over
+1. **Symptom:** Judge score 2.5 for question: Sau câu trả lời trước, hãy nói tiếp 'nó' đo cái gì trong Evaluation Factory?
+2. **Why 1:** Agent response did not fully match the expected answer.
+3. **Why 2:** Retrieval hit rate was 1.0 and MRR was 1.0.
+4. **Why 3:** Judge tags were incomplete, retrieval_miss, tone_mismatch.
+5. **Why 4:** The case type was multi-turn-carry-over, which stresses a known weak point.
+6. **Root Cause:** Generation prompt: answer did not cover all expected facts.
+
+### Case #3: hard_41_conflicting_judge
+1. **Symptom:** Judge score 3.0 for question: Nếu một judge cho 5 điểm và judge còn lại cho 2 điểm thì hệ thống phải làm gì?
+2. **Why 1:** Agent response did not fully match the expected answer.
+3. **Why 2:** Retrieval hit rate was 1.0 and MRR was 1.0.
+4. **Why 3:** Judge tags were incomplete, retrieval_miss.
+5. **Why 4:** The case type was conflicting-judge, which stresses a known weak point.
+6. **Root Cause:** Generation prompt: answer did not cover all expected facts.
 
 ## 4. Kế hoạch cải tiến (Action Plan)
-- [ ] Thay đổi Chunking strategy từ Fixed-size sang Semantic Chunking.
-- [ ] Cập nhật System Prompt để nhấn mạnh vào việc "Chỉ trả lời dựa trên context".
-- [ ] Thêm bước Reranking vào Pipeline.
+- [ ] Tăng chất lượng retrieval bằng semantic embedding hoặc reranking cho hard cases.
+- [ ] Tách chunk theo chủ đề thay vì fixed corpus đoạn dài.
+- [ ] Siết system prompt cho out-of-context, prompt injection và ambiguous questions.
+- [ ] Thêm calibration set để đo position bias và judge disagreement định kỳ.
+- [ ] Theo dõi cost/token theo loại case để giảm chi phí eval mà không giảm độ chính xác.
